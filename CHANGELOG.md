@@ -1,5 +1,6 @@
 # Revision history for foldmap
 
-## 0.1.0.0 -- YYYY-mm-dd
+## 0.2.0.0 -- 2022-07-13
 
-* First version. Released on an unsuspecting world.
+* Implementation of perlin noise
+* Can use command line arguements to customise image
