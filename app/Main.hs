@@ -13,7 +13,7 @@ maxRandomSeed     = 10000
 defaultWidth      = 1000
 defaultHeight     = 1000
 defaultNoise      = 3
-defaultSharpness  = 4.0
+defaultSharpness  = 10.0
 
 data Settings 
   = Settings { width     :: Int
@@ -27,7 +27,6 @@ data Settings
 parseArgs :: [String] -> IO Settings
 parseArgs [f] = do
   r <- randomRIO (0, maxRandomSeed)
-  print r
   return Settings { width     = defaultWidth
                   , height    = defaultHeight
                   , fileName  = f
@@ -58,10 +57,7 @@ main :: IO ()
 main = do
   args   <- getArgs
   s      <- parseArgs args
-  let gs =  GradientShader { start = PixelRGB8 0 0 0
-                           , end   = PixelRGB8 255 0 0
-                           }
   writePng 
-    (fileName s) $ 
-    shade gs     $
+    (fileName s)  $ 
+    shade terrain $
     generatePerlinImage (width s) (height s) (noise s) (noise s) (sharpness s) (seed s)
