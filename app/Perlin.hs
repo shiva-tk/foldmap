@@ -1,4 +1,4 @@
-module Perlin where
+module Perlin (generatePerlinImage) where
 
 import Data.Bits
 import Codec.Picture
@@ -6,7 +6,8 @@ import Codec.Picture
 type Vector2D = (Double, Double)
 
 interpolate :: Double -> Double -> Double -> Double
-interpolate a0 a1 w = (a1 - a0) * w + a0
+interpolate a0 a1 w 
+  = (a1 - a0) * ((w * (w * 6.0 - 15.0) + 10.0) * w * w * w) + a0
 
 randomGradientVector :: Int -> Int -> Vector2D
 randomGradientVector ix iy = (sin random, cos random)
@@ -51,13 +52,16 @@ perlinNoiseAtPoint x y = value
 
     value = interpolate i0 i1 sy
 
-generatePerlinImage :: Int -> Int -> Int -> Int -> Image Pixel8
-generatePerlinImage pixelsW pixelsH gridW gridH 
+sigmoid :: Double -> Double -> Double
+sigmoid a x = 1.0 / (1.0 + exp (negate a * x))
+
+generatePerlinImage :: Int -> Int -> Int -> Int -> Double -> Image Pixel8
+generatePerlinImage pixelsW pixelsH gridW gridH sharpness
   = generateImage generatePerlinPixel pixelsW pixelsH
   where
     generatePerlinPixel :: Int -> Int -> Pixel8
     generatePerlinPixel pixelX pixelY
-      = floor $ 255 * (noise + 1) / 2 
+      = floor $ 255 * sigmoid sharpness noise
       where
         gridX = (fromIntegral pixelX / fromIntegral pixelsW) * fromIntegral gridW
         gridY = (fromIntegral pixelY / fromIntegral pixelsH) * fromIntegral gridW
