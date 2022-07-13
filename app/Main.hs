@@ -1,9 +1,11 @@
 module Main where
 
 import Perlin
+import Shader
 
-import System.Environment
 import Codec.Picture
+import System.Environment
+import System.Exit
 import System.Random
 
 -- Default constants
@@ -33,45 +35,33 @@ parseArgs [f] = do
                   , sharpness = defaultSharpness
                   , seed      = r
                   }
+-- Dimensions: -d
 parseArgs ("-d" : w : h : args) = do
-  parseArgs args >>= \s' -> return Settings { width     = read w
-                                            , height    = read h
-                                            , fileName  = fileName s'
-                                            , noise     = noise s'
-                                            , sharpness = sharpness s'
-                                            , seed      = seed s'
-                                            }
+  s' <- parseArgs args
+  return s' {width = read w, height = read h}
+-- Noise:      -n
 parseArgs ("-n" : n : args) = do
-  parseArgs args >>= \s' -> return Settings { width     = width s'
-                                            , height    = height s'
-                                            , fileName  = fileName s'
-                                            , noise     = read n
-                                            , sharpness = sharpness s'
-                                            , seed      = seed s'
-                                            }
+  s' <- parseArgs args
+  return s' {noise = read n}
+-- Sharpness:  -s
 parseArgs ("-s" : s : args) = do
-  parseArgs args >>= \s' -> return Settings { width     = width s'
-                                            , height    = height s'
-                                            , fileName  = fileName s'
-                                            , noise     = noise s'
-                                            , sharpness = read s
-                                            , seed      = seed s'
-                                            }
+  s' <- parseArgs args
+  return s' {sharpness = read s}
+-- Seed:       -seed
 parseArgs ("-seed" : s : args) = do
-  parseArgs args >>= \s' -> return Settings { width     = width s'
-                                            , height    = height s'
-                                            , fileName  = fileName s'
-                                            , noise     = noise s'
-                                            , sharpness = sharpness s'
-                                            , seed      = read s
-                                            }
+  s' <- parseArgs args
+  return s' {seed = read s}
 parseArgs _ 
-  = error "Bad arguements. Use -h for help."
+  = print "Bad arguements. Use -h for help." >> exitFailure
 
 main :: IO ()
 main = do
-  args <- getArgs
-  s <- parseArgs args
+  args   <- getArgs
+  s      <- parseArgs args
+  let gs =  GradientShader { start = PixelRGB8 0 0 0
+                           , end   = PixelRGB8 255 0 0
+                           }
   writePng 
     (fileName s) $ 
+    shade gs     $
     generatePerlinImage (width s) (height s) (noise s) (noise s) (sharpness s) (seed s)
