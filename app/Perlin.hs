@@ -43,11 +43,11 @@ perlinNoiseAtPoint x y = value
     -- Interpolating between gridpoint gradients
     n0 = dotGridGradient x0 y0 x y
     n1 = dotGridGradient x1 y0 x y
-    i0 = interpolate n1 n0 sx
+    i0 = interpolate n0 n1 sx
 
     m0 = dotGridGradient x0 y1 x y
     m1 = dotGridGradient x1 y1 x y
-    i1 = interpolate m1 m0 sx
+    i1 = interpolate m0 m1 sx
 
     value = interpolate i0 i1 sy
 
