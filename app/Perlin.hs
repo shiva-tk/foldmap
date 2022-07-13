@@ -55,28 +55,14 @@ perlinNoiseAtPoint x y = value
 sigmoid :: Double -> Double -> Double
 sigmoid a x = 1.0 / (1.0 + exp (negate a * x))
 
-generatePerlinImage :: Int -> Int -> Int -> Int -> Double -> Image Pixel8
-generatePerlinImage pixelsW pixelsH gridW gridH sharpness
+generatePerlinImage :: Int -> Int -> Int -> Int -> Double -> Int -> Image Pixel8
+generatePerlinImage pixelsW pixelsH gridW gridH sharpness seed
   = generateImage generatePerlinPixel pixelsW pixelsH
   where
     generatePerlinPixel :: Int -> Int -> Pixel8
     generatePerlinPixel pixelX pixelY
       = floor $ 255 * sigmoid sharpness noise
       where
-        gridX = (fromIntegral pixelX / fromIntegral pixelsW) * fromIntegral gridW
-        gridY = (fromIntegral pixelY / fromIntegral pixelsH) * fromIntegral gridW
+        gridX = (fromIntegral pixelX / fromIntegral pixelsW) * fromIntegral gridW + fromIntegral seed
+        gridY = (fromIntegral pixelY / fromIntegral pixelsH) * fromIntegral gridW + fromIntegral seed
         noise = perlinNoiseAtPoint gridX gridY
-
-
--- type Grid a = Vector (Vector a)
---
--- perlinPixels :: Int -> Int -> Int -> Int -> Grid Double
--- perlinPixels pixelsW pixelsH gridW gridH
---   = V.generate pixelsH genRow
---   where
---     genRow :: Int -> Vector Double
---     genRow row
---       = V.generate pixelsW (\c -> perlinNoiseAtPoint (col c) row')
---       where
---         row' = (fromIntegral row / fromIntegral pixelsH) * fromIntegral gridH
---         col  = \c -> (fromIntegral c / fromIntegral pixelsW) * fromIntegral gridW

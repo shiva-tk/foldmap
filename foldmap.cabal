@@ -58,7 +58,7 @@ executable foldmap
     -- other-extensions:
 
     -- Other library packages from which modules are imported.
-    build-depends:    base ^>=4.13.0.0, JuicyPixels
+    build-depends:    base ^>=4.13.0.0, JuicyPixels, random
 
     -- Directories containing source files.
     hs-source-dirs:   app
