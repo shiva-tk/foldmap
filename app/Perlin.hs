@@ -1,5 +1,4 @@
-module Perlin ( generatePerlinImage
-              , interpolate ) where
+module Perlin (generatePerlinImage) where
 
 import Data.Bits
 import Codec.Picture

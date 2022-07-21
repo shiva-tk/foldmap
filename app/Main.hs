@@ -1,7 +1,7 @@
 module Main where
 
 import Perlin
-import Shader
+import Map
 
 import Codec.Picture
 import System.Environment
@@ -12,14 +12,14 @@ import System.Random
 maxRandomSeed     = 10000
 defaultWidth      = 1000
 defaultHeight     = 1000
-defaultNoise      = 3
+defaultZoom       = 3
 defaultSharpness  = 10.0
 
 data Settings 
   = Settings { width     :: Int
              , height    :: Int
              , fileName  :: String 
-             , noise     :: Int
+             , zoom      :: Int
              , sharpness :: Double
              , seed      :: Int
              }
@@ -30,7 +30,7 @@ parseArgs [f] = do
   return Settings { width     = defaultWidth
                   , height    = defaultHeight
                   , fileName  = f
-                  , noise     = defaultNoise
+                  , zoom      = defaultZoom
                   , sharpness = defaultSharpness
                   , seed      = r
                   }
@@ -38,10 +38,10 @@ parseArgs [f] = do
 parseArgs ("-d" : w : h : args) = do
   s' <- parseArgs args
   return s' {width = read w, height = read h}
--- Noise:      -n
-parseArgs ("-n" : n : args) = do
+-- Zoom:       -z
+parseArgs ("-z" : z : args) = do
   s' <- parseArgs args
-  return s' {noise = read n}
+  return s' {zoom = read z}
 -- Sharpness:  -s
 parseArgs ("-s" : s : args) = do
   s' <- parseArgs args
@@ -55,9 +55,10 @@ parseArgs _
 
 main :: IO ()
 main = do
-  args   <- getArgs
-  s      <- parseArgs args
-  writePng 
-    (fileName s)  $ 
-    shade terrain $
-    generatePerlinImage (width s) (height s) (noise s) (noise s) (sharpness s) (seed s)
+  args <- getArgs
+  s    <- parseArgs args
+  writePng (fileName s) $ 
+    shade
+      (generatePerlinImage (width s) (height s) (zoom s) (zoom s) (sharpness s) (seed s))
+      (generatePerlinImage (width s) (height s) (zoom s) (3 * zoom s) (sharpness s / 2) (seed s * 3))
+      (generatePerlinImage (width s) (height s) (zoom s) (3 * zoom s) (sharpness s / 2) (seed s * 5))
